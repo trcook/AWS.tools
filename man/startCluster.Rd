@@ -15,7 +15,8 @@ startCluster(ami,
 }
 \arguments{
   \item{ami}{machine-id}
-  \item{key}{securtiy key}
+  \item{key}{securtiy key, this is a string denoting which ssh key pair
+    to use  }
   \item{instance.count}{number of instances requested}
   \item{instance.type}{type of instance requested}
   \item{verbose}{print verbose output}
