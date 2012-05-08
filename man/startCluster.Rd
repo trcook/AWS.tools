@@ -1,5 +1,6 @@
 \name{startCluster}
 \alias{startCluster}
+\alias{get.nodes}
 \title{
   Start an EC2 cluster.
 }
@@ -12,6 +13,8 @@ startCluster(ami,
              instance.count,
              instance.type,
              verbose = FALSE)
+
+get.nodes(cluster)
 }
 \arguments{
   \item{ami}{machine-id}
@@ -20,9 +23,13 @@ startCluster(ami,
   \item{instance.count}{number of instances requested}
   \item{instance.type}{type of instance requested}
   \item{verbose}{print verbose output}
+  \item{cluster}{an ec2.cluster object}
 }
 \value{
   a cluster object encompassing the reservationID and instanceID's
+
+  get.nodes returns a vector of the public dns names of the instances
+  comprising the cluster
 }
 \references{
   http://docs.amazonwebservices.com/AWSEC2/latest/CommandLineReference

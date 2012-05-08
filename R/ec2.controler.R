@@ -16,6 +16,17 @@
 ###########################################################################
 require(XML)
 
+cmd.path <- function(cmd) {
+    ##browser()
+    ##paste(system.file(package="AWS.tools"),os.specific$ec2.tools.version,"bin",cmd,sep="/")
+    ec2.home <- system.file("ec2-api-tools-1.5.1.0",package="AWS.tools")
+    cmd <- system.file(paste(os.specific$ec2.tools.version,"bin",cmd,sep="/"),package="AWS.tools",mustWork=TRUE)
+
+    ## must preface command w/ location of EC2 tools
+    paste(paste("EC2_HOME",ec2.home,sep="="),cmd)
+}
+
+
 instances.from.reservation <- function(reservation.id,verbose=FALSE) {
     ec2din(filters=paste("reservation-id",reservation.id,sep="="),verbose=verbose)[[reservation.id]]
 }
@@ -41,7 +52,7 @@ sleep.while.pending <- function(reservation.id,sleep.time=2,verbose=TRUE) {
 }
 
 startCluster <- function(ami,key,instance.count,instance.type,verbose=FALSE) {
-    cmd <- paste("ec2-run-instances",
+    cmd <- paste(cmd.path("ec2-run-instances"),
                  ami,
                  "--show-empty-fields",
                  "--key",key,
@@ -54,7 +65,7 @@ startCluster <- function(ami,key,instance.count,instance.type,verbose=FALSE) {
     }
     res <- system(cmd,intern=TRUE)
     reservation <- strsplit(res[[1]],split="\t")[[1]][-1]
-    sleep.while.pending(reservation[1],verbose)
+    sleep.while.pending(reservation[1],verbose=verbose)
     instances <- instances.from.reservation(reservation[1])
     ans <- list(reservation=reservation,instances=instances)
     class(ans) <- "ec2.cluster"
@@ -104,6 +115,10 @@ get.instances.from.cluster <- function(cluster) {
     cluster[["instances"]][,"instanceId"]
 }
 
+get.nodes <- function(cluster) {
+    cluster$instances[,"dnsName"]
+}
+
 ec2din.format.xml <- function(x) {
     ans <- list()
     x.root <- xmlRoot(xmlTreeParse(paste(x,collapse=""),asText=TRUE))
@@ -114,26 +129,26 @@ ec2din.format.xml <- function(x) {
 }
 
 ec2din <- function(instance=NULL,filters=NULL,verbose=FALSE) {
-    aws.cmd <- paste("ec2-describe-instances",
+    cmd <- paste(cmd.path("ec2-describe-instances"),
                      ifelse(instance,instance,""),
                      "--verbose",
                      ifelse(!is.null(filters),paste("--filter",filters,collapse=" "),""),
                      "|sed -n '/DescribeInstancesResponse/,/\\/DescribeInstancesResponse/p'")
     if(verbose) {
         cat("ec2din, using this cmd:\n")
-        print(aws.cmd)
+        print(cmd)
     }
-    ec2din.format.xml(system(aws.cmd,intern=TRUE))
+    ec2din.format.xml(system(cmd,intern=TRUE))
 }
 
 ec2stop.instances <- function(instance.ids) {
-    cmd <- paste("ec2-stop-instances",paste(instance.ids,collapse=" "))
+    cmd <- paste(cmd.path("ec2-stop-instances"),paste(instance.ids,collapse=" "))
     res <- system(cmd,intern=TRUE)
     do.call(rbind,strsplit(res,"\t"))
 }
 
 ec2terminate.instances <- function(instance.ids) {
-    cmd <- paste("ec2-terminate-instances",paste(instance.ids,collapse=" "))
+    cmd <- paste(cmd.path("ec2-terminate-instances"),paste(instance.ids,collapse=" "))
     res <- system(cmd,intern=TRUE)
     do.call(rbind,strsplit(res,"\t"))
 }

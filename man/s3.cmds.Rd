@@ -23,7 +23,7 @@ s3.rb(bucket, recursive = FALSE, force = FALSE,
 
 s3.ls(bucket = NULL, bucket.location = "US",
       human.readable.sizes = TRUE,
-      list.md5 = FALSE, verbose = FALSE, debug = FALSE)
+      list.md5 = FALSE, verbose = FALSE, debug = FALSE,echo = FALSE)
 
 s3.la(bucket.location = "US", human.readable.sizes = TRUE,
       list.md5 = FALSE, verbose = FALSE, debug = FALSE)
@@ -56,7 +56,10 @@ s3.du(bucket, bucket.location = "US",
   \item{debug}{Enable debug output.}
   \item{recursive}{Recursive upload, download or removal. When used with del it can remove all the files in a bucket.}
   \item{force}{Force overwrite and other dangerous operations. Can be used to remove a non-empty buckets with s3cmd rb --force s3://bkt}
-  \item{encrypt}{Use GPG encryption to protect stored objects from unauthorized access. See http://s3tools.org/s3cmd-public for details about encryption.}
+  \item{encrypt}{Use GPG encryption to protect stored objects from
+    unauthorized access. See http://s3tools.org/s3cmd-public for
+    details aboutencryption.}
+  \item{echo}{if TRUE echo command before executing.}
 }
 \value{
   Return value depends on command used.

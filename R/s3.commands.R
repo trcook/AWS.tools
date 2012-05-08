@@ -49,12 +49,12 @@ s3.rb <- function(bucket,recursive=FALSE,force=FALSE,bucket.location="US",verbos
     system(s3.cmd,intern=TRUE)
 }
 
-s3.ls <- function(bucket=NULL,bucket.location="US",human.readable.sizes=TRUE,list.md5=FALSE,verbose=FALSE,debug=FALSE) {
+s3.ls <- function(bucket=NULL,bucket.location="US",human.readable.sizes=TRUE,list.md5=FALSE,verbose=FALSE,debug=FALSE,echo=FALSE) {
     if(!is.null(bucket)) {
         check.bucket(bucket)
     }
     s3.cmd <- paste("s3cmd ls",
-                    ifelse(bucket,verbose,""),
+                    ifelse(!is.null(bucket),bucket,""),
                     paste("--bucket-location",bucket.location),
                     "--no-progress",
                     ifelse(verbose,"--verbose",""),
@@ -62,7 +62,23 @@ s3.ls <- function(bucket=NULL,bucket.location="US",human.readable.sizes=TRUE,lis
                     ifelse(human.readable.sizes,"--human-readable-sizes",""),
                     ifelse(list.md5,"--list-md5","")
                     )
-    system(s3.cmd,intern=TRUE)
+    if(echo) { print(s3.cmd) }
+    res <- system(s3.cmd,intern=TRUE)
+    ans <- read.table(textConnection(res),as.is=TRUE)
+
+    ## this is guessing
+    ## directory output has only 3 cols
+    ## file output has 4 or 5 (depending on mdsums)
+    if(ncol(ans)==3) {
+        colnames(ans) <- c("date","time","bucket")
+    } else if(ncol(ans)==4 && !list.md5) {
+        colnames(ans) <- c("date","time","size","bucket")
+    } else if(ncol(ans)==5 && list.md5) {
+        colnames(ans) <- c("date","time","size","md5","bucket")
+    } else {
+        warning("could not determine colnames of output.")
+    }
+    ans
 }
 
 s3.la <- function(bucket.location="US",human.readable.sizes=TRUE,list.md5=FALSE,verbose=FALSE,debug=FALSE) {
@@ -97,7 +113,7 @@ s3.put <- function(x,bucket,bucket.location="US",verbose=FALSE,debug=FALSE,encry
 
 s3.get <- function(bucket,bucket.location="US",verbose=FALSE,debug=FALSE) {
     check.bucket(bucket)
-    x.serialized <- tempfile()
+    x.serialized <- tempfile(fileext=".rds")
     s3.cmd <- paste("s3cmd get",
                     bucket,
                     x.serialized,

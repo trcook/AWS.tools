@@ -1,5 +1,5 @@
-export(
-       startCluster,
+export(startCluster,
+       get.nodes,
        ec2din,
        ec2stop.instances,
        ec2terminate.instances,
