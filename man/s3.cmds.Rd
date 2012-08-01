@@ -4,6 +4,7 @@
 \alias{s3.ls}
 \alias{s3.la}
 \alias{s3.put}
+\alias{s3.put.file}
 \alias{s3.get}
 \alias{s3.del}
 \alias{s3.info}
@@ -31,6 +32,9 @@ s3.la(bucket.location = "US", human.readable.sizes = TRUE,
 s3.put(x, bucket, bucket.location = "US", verbose = FALSE,
        debug = FALSE, encrypt = FALSE)
 
+s3.put.file(file, bucket, bucket.location="US", verbose=FALSE,
+       debug=FALSE,encrypt=FALSE)
+
 s3.get(bucket, bucket.location = "US", verbose = FALSE,
        debug = FALSE)
 
@@ -48,6 +52,7 @@ s3.du(bucket, bucket.location = "US",
 }
 \arguments{
   \item{x}{an R object to upload.}
+  \item{file}{a file to upload.}
   \item{bucket}{S3 bucket}
   \item{bucket.location}{Specify datacentre where to create the bucket. Possible values are US (default) or EU.}
   \item{human.readable.sizes}{Print sizes in human readable form.}
