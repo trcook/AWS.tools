@@ -1,3 +1,5 @@
+importFrom(XML,xmlRoot,xmlValue,xmlTreeParse)
+
 export(startCluster,
        get.nodes,
        ec2din,
