@@ -51,13 +51,15 @@ sleep.while.pending <- function(reservation.id,sleep.time=2,verbose=TRUE) {
     if(verbose) { cat("\n") }
 }
 
-startCluster <- function(ami,key,instance.count,instance.type,verbose=FALSE) {
+startCluster <- function(ami,key,instance.count,instance.type,security.groups,verbose=FALSE) {
     cmd <- paste(cmd.path("ec2-run-instances"),
                  ami,
                  "--show-empty-fields",
                  "--key",key,
                  "--instance-count",instance.count,
-                 "--instance-type",instance.type)
+                 "--instance-type",instance.type,
+                 "--group",security.groups
+                 )
 
     if(verbose) {
         cat("using this cmd:\n")
